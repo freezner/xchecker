@@ -1,0 +1,20 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+COPY package.json ./
+RUN npm install
+
+# 개발 모드
+FROM base AS dev
+COPY . .
+CMD ["npx", "vite", "--host"]
+
+# 프로덕션 빌드
+FROM base AS build
+ARG VITE_API_URL
+ARG VITE_WS_URL
+COPY . .
+RUN npx vite build
+
+FROM nginx:alpine AS prod
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf

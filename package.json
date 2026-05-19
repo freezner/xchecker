@@ -1,0 +1,12 @@
+{
+  "name": "xchecker",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "docker-compose up --build",
+    "backend": "pnpm --filter backend dev",
+    "frontend": "pnpm --filter frontend dev"
+  },
+  "workspaces": ["packages/*"]
+}
