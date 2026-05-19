@@ -38,7 +38,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "127.0.0.1:${BACKEND_PORT:-13001}:3001"
+      - "127.0.0.1:${BACKEND_PORT:-3004}:3001"
     restart: unless-stopped
 
   frontend:
@@ -49,7 +49,7 @@ services:
         VITE_API_URL: ${ORIGIN}
         VITE_WS_URL: ${WS_ORIGIN}
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-18080}:3000"
+      - "127.0.0.1:${FRONTEND_PORT:-3003}:3000"
     restart: unless-stopped
 
 volumes:

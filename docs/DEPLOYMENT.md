@@ -47,8 +47,8 @@ WS_ORIGIN=wss://xchecker.freezner.com
 # DEFAULT_DEBATER_A_MODEL=gpt-4o-mini
 # DEFAULT_DEBATER_B_MODEL=gpt-4o-mini
 
-BACKEND_PORT=13001
-FRONTEND_PORT=18080
+BACKEND_PORT=3004
+FRONTEND_PORT=3003
 ```
 
 랜덤 값 생성:
@@ -78,7 +78,7 @@ docker compose -f docker-compose.prod.yml ps
 백엔드가 정상 기동되면 로컬에서 먼저 확인:
 
 ```bash
-curl -i http://127.0.0.1:13001/api/health
+curl -i http://127.0.0.1:3004/api/health
 # {"ok":true}
 ```
 
@@ -114,7 +114,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/xchecker.freezner.com/privkey.pem;
 
     location /api/ {
-        proxy_pass http://127.0.0.1:13001;
+        proxy_pass http://127.0.0.1:3004;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -126,7 +126,7 @@ server {
     }
 
     location / {
-        proxy_pass http://127.0.0.1:18080;
+        proxy_pass http://127.0.0.1:3003;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto https;
     }
@@ -231,7 +231,7 @@ cat backup-YYYY-MM-DD.sql | docker compose -f docker-compose.prod.yml exec -T po
 
 ## 10. 배포 전 체크리스트
 
-- [ ] `curl http://127.0.0.1:13001/api/health` → `{"ok":true}`
+- [ ] `curl http://127.0.0.1:3004/api/health` → `{"ok":true}`
 - [ ] nginx 설정에서 `proxy_pass` 포트가 `.env`의 `BACKEND_PORT`·`FRONTEND_PORT`와 일치한다
 - [ ] `RP_ID=xchecker.freezner.com` 으로 설정되어 있다
 - [ ] `ORIGIN=https://xchecker.freezner.com` 으로 설정되어 있다
