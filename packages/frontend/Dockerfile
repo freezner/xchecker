@@ -17,4 +17,5 @@ RUN npx vite build
 
 FROM base AS prod
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/vite.config.ts ./vite.config.ts
 CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "3000"]
