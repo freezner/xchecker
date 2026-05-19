@@ -37,6 +37,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-13001}:3001"
     restart: unless-stopped
 
   frontend:
@@ -46,19 +48,8 @@ services:
       args:
         VITE_API_URL: ${ORIGIN}
         VITE_WS_URL: ${WS_ORIGIN}
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./infra/nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - backend
-      - frontend
+      - "127.0.0.1:${FRONTEND_PORT:-18080}:3000"
     restart: unless-stopped
 
 volumes:

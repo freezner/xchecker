@@ -15,6 +15,6 @@ ARG VITE_WS_URL
 COPY . .
 RUN npx vite build
 
-FROM nginx:alpine AS prod
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+FROM base AS prod
+COPY --from=build /app/dist ./dist
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "3000"]
