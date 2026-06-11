@@ -70,7 +70,6 @@ function EditableLabel({ keyId, initialLabel, onSaved }: {
 
 export function ApiKeyManager() {
   const [keys, setKeys] = useState<ApiKeyRecord[]>([]);
-  const [apiMode, setApiMode] = useState<'default' | 'custom'>('default');
   const [provider, setProvider] = useState<string>('openai');
   const [label, setLabel] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -78,10 +77,7 @@ export function ApiKeyManager() {
   const [error, setError] = useState('');
 
   const load = () => userApi.listApiKeys().then(setKeys);
-  useEffect(() => {
-    Promise.all([load(), userApi.getModelSettings()])
-      .then(([, settings]) => setApiMode(settings.apiMode));
-  }, []);
+  useEffect(() => { load(); }, []);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,13 +112,6 @@ export function ApiKeyManager() {
         <p className="settings-card-desc">LLM 프로바이더별 API 키를 등록하세요</p>
       </div>
       <div className="settings-card-body">
-        {apiMode === 'default' && (
-          <div className="api-key-disabled-message">
-            <strong>현재 기본 제공 모드입니다.</strong>
-            <span>API 키를 미리 등록해두고, 모델 설정에서 개별 API로 전환하면 사용됩니다.</span>
-          </div>
-        )}
-
         <form onSubmit={handleAdd} className="add-key-form">
           <select value={provider} onChange={(e) => setProvider(e.target.value)}>
             {PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
