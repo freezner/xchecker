@@ -239,6 +239,9 @@ export async function debateRoutes(app: FastifyInstance) {
       const debaterA = new DebaterRole(debaterAProvider, 'A', context, harness, onChunk, documents, description);
       const debaterB = new DebaterRole(debaterBProvider, 'B', context, harness, onChunk, documents, description);
 
+      // 엔진이 종료 상태(done/error)를 이미 설정했으면 close 이벤트가 덮어쓰지 않도록 추적
+      let terminalStateSet = false;
+
       const engine = new DebateEngine(
         session.topic,
         description,
@@ -273,6 +276,7 @@ export async function debateRoutes(app: FastifyInstance) {
           }
 
           if (event.type === 'done') {
+            terminalStateSet = true;
             sessionService.updateState(id, 'done', {
               token_total: event.tokenTotal,
               ended_at: new Date().toISOString(),
@@ -280,6 +284,7 @@ export async function debateRoutes(app: FastifyInstance) {
           }
 
           if (event.type === 'error') {
+            terminalStateSet = true;
             console.error(`[engine] error: ${event.content}`);
             sessionService.updateState(id, 'error', { ended_at: new Date().toISOString() });
           }
@@ -293,9 +298,11 @@ export async function debateRoutes(app: FastifyInstance) {
         documents,
       );
 
-      // 클라이언트 강제 종료 처리
+      // 클라이언트 강제 종료 처리: 엔진이 정상/에러 종료한 경우에는 상태를 덮어쓰지 않음
       socket.on('close', () => {
-        sessionService.updateState(id, 'stopped', { ended_at: new Date().toISOString() });
+        if (!terminalStateSet) {
+          sessionService.updateState(id, 'stopped', { ended_at: new Date().toISOString() });
+        }
       });
 
       await engine.run();
