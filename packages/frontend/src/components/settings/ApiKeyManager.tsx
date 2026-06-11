@@ -109,23 +109,21 @@ export function ApiKeyManager() {
     setKeys((prev) => prev.map((k) => k.id === id ? { ...k, label: newLabel } : k));
   };
 
-  const disabled = apiMode === 'default';
-
   return (
-    <div className={`settings-card api-key-card${disabled ? ' is-disabled' : ''}`}>
+    <div className="settings-card api-key-card">
       <div className="settings-card-header">
         <h3>API 키 관리</h3>
         <p className="settings-card-desc">LLM 프로바이더별 API 키를 등록하세요</p>
       </div>
       <div className="settings-card-body">
-        {disabled && (
+        {apiMode === 'default' && (
           <div className="api-key-disabled-message">
-            <strong>기본 제공 모드에서는 API 키 등록이 필요하지 않습니다.</strong>
-            <span>모델 설정에서 개별 API를 선택하면 이 메뉴가 활성화됩니다.</span>
+            <strong>현재 기본 제공 모드입니다.</strong>
+            <span>API 키를 미리 등록해두고, 모델 설정에서 개별 API로 전환하면 사용됩니다.</span>
           </div>
         )}
 
-        <form onSubmit={handleAdd} className="add-key-form" aria-disabled={disabled}>
+        <form onSubmit={handleAdd} className="add-key-form">
           <select value={provider} onChange={(e) => setProvider(e.target.value)}>
             {PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>

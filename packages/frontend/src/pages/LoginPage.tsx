@@ -63,7 +63,7 @@ export function LoginPage() {
             <Input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="표시될 이름"
+              placeholder="사용 닉네임"
               required
             />
           )}
