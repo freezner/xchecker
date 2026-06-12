@@ -612,24 +612,6 @@ a:hover { text-decoration: underline; }
 
 /* ─── API Key Manager ─── (override above) */
 .api-key-manager { display: contents; }
-.api-key-card.is-disabled .add-key-form,
-.api-key-card.is-disabled .key-list {
-  opacity: 0.35;
-  filter: grayscale(0.35);
-  pointer-events: none;
-  user-select: none;
-}
-.api-key-disabled-message {
-  padding: 0.875rem 1rem;
-  border: 1px solid rgba(99, 102, 241, 0.35);
-  border-radius: 8px;
-  background: rgba(99, 102, 241, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-.api-key-disabled-message strong { font-size: 0.875rem; color: var(--text); }
-.api-key-disabled-message span { font-size: 0.8125rem; color: var(--muted); }
 .add-key-form {
   display: grid;
   grid-template-columns: auto 1fr 1fr auto;
