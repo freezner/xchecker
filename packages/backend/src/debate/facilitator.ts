@@ -39,12 +39,14 @@ export class FacilitatorRole {
     private harness: HarnessConfig,
     private onChunk: (chunk: string) => void,
     documents: DebateDocument[] = [],
+    debateRules = '',
   ) {
+    const ruleNote = debateRules.trim() ? `\n\n[토론 규칙]\n${debateRules.trim()}` : '';
     const textDocs = documents.filter((d) => !d.mime_type.startsWith('image/'));
     const docNote = textDocs.length > 0
       ? '\n\n[참고 자료]\n' + textDocs.map((d) => `--- ${d.filename} ---\n${d.content}`).join('\n\n')
       : '';
-    this.systemPrompt = FACILITATOR_SYSTEM + docNote;
+    this.systemPrompt = FACILITATOR_SYSTEM + ruleNote + docNote;
   }
 
   async createPolicy(topic: string, description = ''): Promise<DebatePolicy> {

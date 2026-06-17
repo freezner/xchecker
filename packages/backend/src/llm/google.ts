@@ -3,7 +3,7 @@ import { LLMContentPart, LLMMessage, LLMProvider, LLMResponse } from './provider
 export class GoogleProvider implements LLMProvider {
   constructor(
     private apiKey: string,
-    private model: string = 'gemini-1.5-pro',
+    private model: string = 'gemini-3.5-flash',
   ) {}
 
   private toParts(content: string | LLMContentPart[]) {

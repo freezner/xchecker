@@ -52,6 +52,7 @@ export class DebateEngine {
       this.emit({ type: 'policy', content: JSON.stringify(policy) });
 
       // 2. 라운드 진행
+      let previousAnswerB = '';
       for (let round = 1; round <= policy.rounds; round++) {
         // 하네스 체크
         const harnessResult = checkHarness(this.harness, round, this.tokenTotal, this.startedAt);
@@ -70,15 +71,16 @@ export class DebateEngine {
 
         // 토론자A 응답 (격리된 컨텍스트, 스트리밍)
         this.emit({ type: 'chunk', role: 'debater_a', round, content: '' });
-        const answerA = await this.debaterA.respond(question.content);
+        const answerA = await this.debaterA.respond(question.content, previousAnswerB);
         this.emit({ type: 'message', role: 'debater_a', round, content: answerA.content });
         this.tokenTotal += answerA.tokenCount;
 
         // 토론자B 응답 (격리된 컨텍스트, 스트리밍)
         this.emit({ type: 'chunk', role: 'debater_b', round, content: '' });
-        const answerB = await this.debaterB.respond(question.content);
+        const answerB = await this.debaterB.respond(question.content, answerA.content);
         this.emit({ type: 'message', role: 'debater_b', round, content: answerB.content });
         this.tokenTotal += answerB.tokenCount;
+        previousAnswerB = answerB.content;
 
         // Facilitator 합산
         const synthesis = await this.facilitator.synthesize(

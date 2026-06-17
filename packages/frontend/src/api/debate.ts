@@ -6,6 +6,7 @@ export interface HarnessConfig {
   maxTokensPerTurn?: number;
   maxTotalTokens?: number;
   stopOnConsensus?: boolean;
+  debateRules?: string;
 }
 
 export interface DebateSession {

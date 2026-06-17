@@ -6,7 +6,7 @@ import { DebateDocument } from './document';
 const DEBATER_SYSTEM = (role: 'A' | 'B') =>
   `당신은 독립적인 분석가 ${role}입니다.
 주어진 질문에 대해 사실과 논리에 기반한 솔직한 의견을 제시하세요.
-다른 분석가의 의견을 모르는 상태에서 독립적으로 분석합니다.
+상대 분석가의 의견이 제공되면, 그 논리의 강점과 약점을 검토한 뒤 필요한 경우 반박하세요.
 
 출처 표기 지침:
 - 특정 사실, 통계, 연구 결과를 주장할 때는 반드시 출처를 명시하세요.
@@ -28,24 +28,31 @@ export class DebaterRole {
     private onChunk: (chunk: string) => void,
     documents: DebateDocument[] = [],
     description = '',
+    debateRules = '',
   ) {
     const descNote = description.trim() ? `\n\n[토론 배경]\n${description.trim()}` : '';
+    const ruleNote = debateRules.trim() ? `\n\n[토론 규칙]\n${debateRules.trim()}` : '';
     const textDocs = documents.filter((d) => !d.mime_type.startsWith('image/'));
     const docNote = textDocs.length > 0
       ? '\n\n[참고 자료]\n' + textDocs.map((d) => `--- ${d.filename} ---\n${d.content}`).join('\n\n')
       : '';
-    this.systemPrompt = DEBATER_SYSTEM(role) + descNote + docNote;
+    this.systemPrompt = DEBATER_SYSTEM(role) + descNote + ruleNote + docNote;
   }
 
-  async respond(question: string): Promise<{ content: string; tokenCount: number }> {
+  async respond(question: string, opposingAnswer = ''): Promise<{ content: string; tokenCount: number }> {
     const history = this.role === 'A'
       ? this.context.getDebaterAHistory()
       : this.context.getDebaterBHistory();
 
+    const opposingBlock = opposingAnswer.trim()
+      ? `\n\n[상대 토론자의 답변]\n${opposingAnswer.trim()}\n\n위 상대 답변을 고려해 응답하세요.`
+      : '';
+    const prompt = `${question}${opposingBlock}`;
+
     const messages: LLMMessage[] = [
       { role: 'system', content: this.systemPrompt },
       ...history,
-      { role: 'user', content: question },
+      { role: 'user', content: prompt },
     ];
 
     const res = await this.provider.chatStream(
@@ -59,7 +66,7 @@ export class DebaterRole {
       ? this.context.addDebaterA.bind(this.context)
       : this.context.addDebaterB.bind(this.context);
 
-    addToContext({ role: 'user', content: question });
+    addToContext({ role: 'user', content: prompt });
     addToContext({ role: 'assistant', content: res.content });
 
     return { content: res.content, tokenCount: res.tokenCount };

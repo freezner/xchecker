@@ -27,6 +27,7 @@ const HarnessSchema = z.object({
   maxTokensPerTurn: z.number().int().min(100).max(16000).optional(),
   maxTotalTokens: z.number().int().min(1000).max(500000).optional(),
   stopOnConsensus: z.boolean().optional(),
+  debateRules: z.string().max(2000).optional(),
 });
 
 export async function debateRoutes(app: FastifyInstance) {
@@ -235,9 +236,10 @@ export async function debateRoutes(app: FastifyInstance) {
       console.log(`[ws] providers ready: facilitator=${facilitatorKey.provider}/${session.facilitator_model}, A=${debaterAKey.provider}/${session.debater_a_model}, B=${debaterBKey.provider}/${session.debater_b_model}`);
 
       const description = session.description ?? '';
-      const facilitator = new FacilitatorRole(facilitatorProvider, context, harness, onChunk, documents);
-      const debaterA = new DebaterRole(debaterAProvider, 'A', context, harness, onChunk, documents, description);
-      const debaterB = new DebaterRole(debaterBProvider, 'B', context, harness, onChunk, documents, description);
+      const debateRules = harness.debateRules ?? '';
+      const facilitator = new FacilitatorRole(facilitatorProvider, context, harness, onChunk, documents, debateRules);
+      const debaterA = new DebaterRole(debaterAProvider, 'A', context, harness, onChunk, documents, description, debateRules);
+      const debaterB = new DebaterRole(debaterBProvider, 'B', context, harness, onChunk, documents, description, debateRules);
 
       // 엔진이 종료 상태(done/error)를 이미 설정했으면 close 이벤트가 덮어쓰지 않도록 추적
       let terminalStateSet = false;

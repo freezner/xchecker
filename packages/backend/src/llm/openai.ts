@@ -12,7 +12,7 @@ function toOpenAIContent(content: string | LLMContentPart[]) {
 export class OpenAIProvider implements LLMProvider {
   constructor(
     private apiKey: string,
-    private model: string = 'gpt-4o',
+    private model: string = 'gpt-5.5',
   ) {}
 
   async chat(messages: LLMMessage[], maxTokens: number): Promise<LLMResponse> {
@@ -25,7 +25,7 @@ export class OpenAIProvider implements LLMProvider {
       body: JSON.stringify({
         model: this.model,
         messages: messages.map((m) => ({ role: m.role, content: toOpenAIContent(m.content) })),
-        max_tokens: maxTokens,
+        max_completion_tokens: maxTokens,
       }),
     });
 
@@ -61,7 +61,7 @@ export class OpenAIProvider implements LLMProvider {
       body: JSON.stringify({
         model: this.model,
         messages: messages.map((m) => ({ role: m.role, content: toOpenAIContent(m.content) })),
-        max_tokens: maxTokens,
+        max_completion_tokens: maxTokens,
         stream: true,
       }),
     });

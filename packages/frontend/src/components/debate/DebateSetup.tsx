@@ -20,6 +20,8 @@ const ALLOWED_MIME: Record<string, string> = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
 };
 
+const DEFAULT_DEBATE_RULES = '상대방의 논리를 반박하면서 치열하게 토론';
+
 export function DebateSetup() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +34,7 @@ export function DebateSetup() {
     maxTokensPerTurn: 4000,
     maxTotalTokens: 100000,
     stopOnConsensus: true,
+    debateRules: DEFAULT_DEBATE_RULES,
   });
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
@@ -125,6 +128,19 @@ export function DebateSetup() {
           maxLength={5000}
         />
         <span className="field-hint">{description.length} / 5000</span>
+      </div>
+
+      <div className="field">
+        <label className="field-label">토론 규칙</label>
+        <textarea
+          className="field-textarea"
+          value={harness.debateRules ?? ''}
+          onChange={(e) => setHarness((h) => ({ ...h, debateRules: e.target.value }))}
+          placeholder={DEFAULT_DEBATE_RULES}
+          rows={3}
+          maxLength={2000}
+        />
+        <span className="field-hint">{(harness.debateRules ?? '').length} / 2000</span>
       </div>
 
       {/* 참고 자료 */}

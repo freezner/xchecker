@@ -4,6 +4,7 @@ export interface HarnessConfig {
   maxTokensPerTurn: number;    // 한 턴당 최대 토큰
   maxTotalTokens: number;      // 세션 전체 누적 최대 토큰
   stopOnConsensus: boolean;    // 합의 도달 시 조기 종료
+  debateRules: string;         // 토론 진행 및 응답 규칙
 }
 
 export const DEFAULT_HARNESS: HarnessConfig = {
@@ -12,6 +13,7 @@ export const DEFAULT_HARNESS: HarnessConfig = {
   maxTokensPerTurn: 4000,
   maxTotalTokens: 100000,
   stopOnConsensus: true,
+  debateRules: '상대방의 논리를 반박하면서 치열하게 토론',
 };
 
 export interface HarnessCheckResult {
